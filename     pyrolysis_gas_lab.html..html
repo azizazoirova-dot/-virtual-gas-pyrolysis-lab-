@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Виртуальная лаборатория — Пиролиз углеводородных газов</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7f8;color:#173042}.wrap{max-width:1050px;margin:auto;padding:20px}.hero{background:linear-gradient(135deg,#0f5d67,#198754);color:#fff;border-radius:20px;padding:26px;box-shadow:0 8px 25px #0002}.hero h1{margin:0 0 8px;font-size:30px}.hero p{margin:6px 0;line-height:1.5}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 16px #0001}.card h2{margin-top:0;font-size:21px}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin:10px 0}.field label{display:block;font-weight:700;margin-bottom:6px}.field input,.field select{width:100%;padding:11px;border:1px solid #ccd8dc;border-radius:9px;font-size:16px}.btn{border:0;border-radius:10px;padding:12px 18px;background:#198754;color:white;font-weight:700;font-size:16px;cursor:pointer}.scheme{background:#eef6f7;border-radius:12px;padding:15px;text-align:center}.reactor{display:inline-block;border:4px solid #3c6570;border-radius:20px;padding:20px 30px;background:#fff;font-weight:700}.arrow{font-size:25px;color:#198754;margin:0 8px}.results{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{background:#eef7f2;border-radius:10px;padding:12px}.metric b{display:block;font-size:21px;color:#13734b;margin-top:4px}.note{font-size:14px;color:#60747b;line-height:1.5}.progress{height:12px;background:#dfe9ec;border-radius:8px;overflow:hidden}.bar{height:100%;width:0;background:#198754;transition:.4s}.quiz button{display:block;width:100%;text-align:left;background:#f4f7f8;color:#173042;border:1px solid #d5e0e3;margin:8px 0;padding:11px;border-radius:9px}.quiz button.correct{background:#d9f3e5;border-color:#198754}.quiz button.wrong{background:#fde1e1;border-color:#c33}.footer{text-align:center;padding:25px;color:#60747b;font-size:13px}@media(max-width:750px){.grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}.results{grid-template-columns:1fr}.hero h1{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="hero">
+<h1>Виртуальная лаборатория: пиролиз углеводородных газов</h1>
+<p>Моделирование термического разложения углеводородного сырья с образованием этилена, пропилена, метана и побочных продуктов.</p>
+<p><b>Цель:</b> исследовать влияние температуры, времени контакта и разбавления паром на выход целевых олефинов.</p>
+</section>
+<div class="grid">
+<section class="card">
+<h2>1. Параметры установки</h2>
+<div class="row">
+<div class="field"><label>Температура, °C</label><input id="T" type="number" min="650" max="900" value="800"></div>
+<div class="field"><label>Время контакта, с</label><input id="tau" type="number" min="0.1" max="2" step="0.1" value="0.5"></div>
+</div>
+<div class="row">
+<div class="field"><label>Доля пара, кг/кг сырья</label><input id="steam" type="number" min="0" max="1" step="0.05" value="0.4"></div>
+<div class="field"><label>Сырьё</label><select id="feed"><option value="ethane">Этан</option><option value="propane">Пропан</option><option value="mixed">Смесь углеводородных газов</option></select></div>
+</div>
+<button class="btn" onclick="runLab()">▶ Запустить эксперимент</button>
+<p class="note">Учебная модель. Реальные промышленные установки требуют инженерного расчёта, контроля температуры, давления и безопасности.</p>
+</section>
+<section class="card">
+<h2>2. Технологическая схема</h2>
+<div class="scheme">
+<div>Сырьё → Подача пара</div><div style="margin:12px">↓</div>
+<div class="reactor">ПИРОЛИЗНАЯ ПЕЧЬ<br><small>650–900 °C</small></div>
+<div style="margin:12px">↓</div>
+<div>Закалка → Газ разделения → Целевые олефины</div>
+</div>
+<p class="note">Основная реакционная зона работает при высокой температуре и малом времени контакта. Быстрое охлаждение снижает вторичные реакции.</p>
+</section>
+</div>
+<section class="card" style="margin-top:18px">
+<h2>3. Результаты эксперимента</h2>
+<div class="results">
+<div class="metric">Выход этилена<b id="ethylene">—</b></div>
+<div class="metric">Выход пропилена<b id="propylene">—</b></div>
+<div class="metric">Метан + другие газы<b id="byprod">—</b></div>
+</div>
+<p style="margin-top:15px">Степень условного превращения: <b id="conv">—</b></p>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<p id="status" class="note">Введите параметры и запустите эксперимент.</p>
+</section>
+<section class="card" style="margin-top:18px">
+<h2>4. Ход работы</h2>
+<ol>
+<li>Выберите тип углеводородного сырья.</li><li>Установите температуру пиролиза в диапазоне 650–900 °C.</li>
+<li>Задайте время контакта и количество разбавляющего пара.</li><li>Нажмите «Запустить эксперимент».</li>
+<li>Сравните выход этилена и пропилена при разных режимах.</li>
+<li>Сделайте вывод о влиянии температуры и времени контакта.</li>
+</ol>
+</section>
+<section class="card quiz" style="margin-top:18px">
+<h2>5. Контрольные вопросы</h2>
+<p><b>1. Как обычно повышают образование лёгких олефинов при пиролизе?</b></p>
+<button onclick="answer(this,true)">Повышением температуры в допустимом технологическом диапазоне и снижением времени контакта</button>
+<button onclick="answer(this,false)">Снижением температуры до комнатной</button>
+<button onclick="answer(this,false)">Увеличением времени контакта без ограничений</button>
+<p><b>2. Зачем в пиролиз подают водяной пар?</b></p>
+<button onclick="answer(this,true)">Для разбавления сырья и уменьшения вторичных реакций/коксообразования</button>
+<button onclick="answer(this,false)">Чтобы полностью заменить углеводородное сырьё</button>
+<button onclick="answer(this,false)">Чтобы охладить печь до 25 °C</button>
+</section>
+<div class="footer">Виртуальная лаборатория • Пиролиз углеводородных газов • Учебная симуляция</div>
+</div>
+<script>
+function runLab(){
+ const T=+document.getElementById('T').value,tau=+document.getElementById('tau').value,steam=+document.getElementById('steam').value,feed=document.getElementById('feed').value;
+ let base=feed==='ethane'?0.62:feed==='propane'?0.38:0.50;
+ let temp=Math.max(0,Math.min(1,(T-650)/250));
+ let contact=Math.max(0,Math.min(1,(1.2-tau)/1.1));
+ let dilution=Math.max(0,Math.min(1,steam/0.8));
+ let eth=base*(0.65+0.22*temp+0.08*dilution+0.05*contact);
+ let prop=(feed==='ethane'?0.12:0.20)*(0.8+0.35*temp+0.1*dilution);
+ let conv=Math.min(98,62+28*temp+7*contact+3*dilution);
+ let by=Math.max(0,100-eth*100-prop*100);
+ document.getElementById('ethylene').textContent=(eth*100).toFixed(1)+' %';
+ document.getElementById('propylene').textContent=(prop*100).toFixed(1)+' %';
+ document.getElementById('byprod').textContent=by.toFixed(1)+' %';
+ document.getElementById('conv').textContent=conv.toFixed(1)+' %';
+ document.getElementById('bar').style.width=conv+'%';
+ document.getElementById('status').textContent='Эксперимент завершён. Измените один параметр и повторите опыт для сравнения результатов.';
+}
+function answer(el,ok){el.classList.remove('correct','wrong');el.classList.add(ok?'correct':'wrong');}
+</script>
+</body>
+</html>
