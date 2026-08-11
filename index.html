@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Виртуальная лаборатория — Пиролиз углеводородного газа</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f6f9;
+    color: #17202a;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+.header {
+    background: linear-gradient(135deg, #123c69, #1f6f8b);
+    color: white;
+    padding: 30px;
+    border-radius: 18px;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    margin: 0 0 10px;
+    font-size: 30px;
+}
+
+.header p {
+    margin: 6px 0;
+    line-height: 1.5;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+h2 {
+    color: #123c69;
+    margin-top: 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+input, select {
+    padding: 12px;
+    border: 1px solid #b8c4ce;
+    border-radius: 9px;
+    font-size: 16px;
+}
+
+button {
+    border: none;
+    border-radius: 10px;
+    padding: 14px 22px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.start {
+    background: #16803c;
+    color: white;
+}
+
+.reset {
+    background: #d9534f;
+    color: white;
+    margin-left: 8px;
+}
+
+button:hover {
+    opacity: 0.88;
+}
+
+.result {
+    display: none;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.result-box {
+    background: #eef5fa;
+    padding: 18px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.result-box strong {
+    display: block;
+    font-size: 25px;
+    color: #123c69;
+    margin-top: 8px;
+}
+
+.bar {
+    height: 28px;
+    background: #e5e7e9;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 8px 0 15px;
+}
+
+.fill {
+    height: 100%;
+    width: 0%;
+    background: #1f6f8b;
+    transition: width 1s;
+}
+
+.warning {
+    background: #fff3cd;
+    border-left: 5px solid #f0ad4e;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.success {
+    background: #dff0d8;
+    border-left: 5px solid #3c763d;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #d5d8dc;
+    text-align: center;
+}
+
+th {
+    background: #123c69;
+    color: white;
+}
+
+.footer {
+    text-align: center;
+    color: #68737d;
+    padding: 20px;
+}
+
+@media(max-width:600px) {
+    .container {
+        padding: 10px;
+    }
+
+    .header h1 {
+        font-size: 23px;
+    }
+
+    .reset {
+        margin-left: 0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>Виртуальная лаборатория: пиролиз углеводородного газа</h1>
+
+<p>
+Моделирование процесса термического разложения углеводородного сырья
+с образованием этилена, пропилена, водорода и других продуктов.
+</p>
+
+<p><b>Цель работы:</b> исследовать влияние температуры и времени контакта
+на выход продуктов пиролиза.</p>
+</div>
+
+<div class="card">
+
+<h2>1. Параметры установки</h2>
+
+<div class="grid">
+
+<div class="field">
+<label>Температура пиролиза, °C</label>
+<input id="temperature" type="number" value="800" min="650" max="950">
+</div>
+
+<div class="field">
+<label>Время контакта, с</label>
+<input id="time" type="number" value="0.5" min="0.1" max="5" step="0.1">
+</div>
+
+<div class="field">
+<label>Расход сырья, кг/ч</label>
+<input id="feed" type="number" value="100" min="1" max="1000">
+</div>
+
+<div class="field">
+<label>Тип сырья</label>
+<select id="feedType">
+<option value="ethane">Этан</option>
+<option value="propane">Пропан</option>
+<option value="butane">Бутан</option>
+<option value="mixed">Газовая смесь</option>
+</select>
+</div>
+
+</div>
+
+<button class="start" onclick="runExperiment()">
+▶ Запустить эксперимент
+</button>
+
+<button class="reset" onclick="resetLab()">
+↻ Сбросить
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>2. Теоретические сведения</h2>
+
+<p>
+Пиролиз углеводородного газа — высокотемпературный процесс
+термического разложения углеводородов без доступа кислорода.
+Основными целевыми продуктами являются низшие олефины,
+прежде всего этилен и пропилен.
+</p>
+
+<p>
+Типичный диапазон температуры пиролиза составляет примерно
+650–950 °C. Повышение температуры обычно увеличивает степень
+разложения сырья и способствует образованию лёгких олефинов.
+</p>
+
+<div class="warning">
+<b>Внимание!</b> Расчёты в данной лаборатории являются учебной
+математической моделью и не заменяют промышленный технологический расчёт.
+</div>
+
+</div>
+
+<div id="result" class="card result">
+
+<h2>3. Результаты эксперимента</h2>
+
+<div class="results-grid">
+
+<div class="result-box">
+Выход этилена
+<strong id="ethylene">0%</strong>
+</div>
+
+<div class="result-box">
+Выход пропилена
+<strong id="propylene">0%</strong>
+</div>
+
+<div class="result-box">
+Водород
+<strong id="hydrogen">0%</strong>
+</div>
+
+<div class="result-box">
+Метан
+<strong id="methane">0%</strong>
+</div>
+
+<div class="result-box">
+Прочие продукты
+<strong id="other">0%</strong>
+</div>
+
+</div>
+
+<h3>Распределение продуктов</h3>
+
+<p>Этилен</p>
+<div class="bar"><div id="barEthylene" class="fill"></div></div>
+
+<p>Пропилен</p>
+<div class="bar"><div id="barPropylene" class="fill"></div></div>
+
+<p>Водород</p>
+<div class="bar"><div id="barHydrogen" class="fill"></div></div>
+
+<p>Метан</p>
+<div class="bar"><div id="barMethane" class="fill"></div></div>
+
+<div id="conclusion" class="success"></div>
+
+</div>
+
+<div class="card">
+
+<h2>4. Материальный баланс</h2>
+
+<table>
+<thead>
+<tr>
+<th>Компонент</th>
+<th>Массовая доля, %</th>
+<th>Расход, кг/ч</th>
+</tr>
+</thead>
+
+<tbody id="balance">
+<tr>
+<td colspan="3">Запустите эксперимент</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>5. Контрольные вопросы</h2>
+
+<ol>
+<li>Что называется процессом пиролиза?</li>
+<li>Почему пиролиз проводят при высокой температуре?</li>
+<li>Какие продукты являются основными при пиролизе этана?</li>
+<li>Как температура влияет на выход этилена?</li>
+<li>Почему время контакта влияет на состав продуктов?</li>
+<li>Какова роль водяного пара в промышленном пиролизе?</li>
+<li>Чем пиролиз отличается от каталитического крекинга?</li>
+</ol>
+
+</div>
+
+<div class="card">
+
+<h2>6. Вывод</h2>
+
+<p>
+После проведения виртуального эксперимента студент должен
+проанализировать зависимость выхода этилена и других продуктов
+от температуры и времени контакта.
+</p>
+
+</div>
+
+<div class="footer">
+Виртуальная лаборатория по дисциплине
+«Переработка углеводородных газов»
+</div>
+
+</div>
+
+<script>
+
+function runExperiment() {
+
+    let T = Number(document.getElementById("temperature").value);
+    let time = Number(document.getElementById("time").value);
+    let feed = Number(document.getElementById("feed").value);
+    let type = document.getElementById("feedType").value;
+
+    if (T < 650 || T > 950) {
+        alert("Введите температуру от 650 до 950 °C.");
+        return;
+    }
+
+    if (time <= 0 || feed <= 0) {
+        alert("Проверьте введённые параметры.");
+        return;
+    }
+
+    let baseEthylene;
+    let basePropylene;
+
+    if (type === "ethane") {
+        baseEthylene = 48;
+        basePropylene = 8;
+    }
+
+    if (type === "propane") {
+        baseEthylene = 32;
+        basePropylene = 24;
+    }
+
+    if (type === "butane") {
+        baseEthylene = 28;
+        basePropylene = 25;
+    }
+
+    if (type === "mixed") {
+        baseEthylene = 35;
+        basePropylene = 20;
+    }
+
+    let temperatureEffect = (T - 750) * 0.045;
+    let timeEffect = (0.8 - time) * 4;
+
+    let ethylene = baseEthylene + temperatureEffect + timeEffect;
+    let propylene = basePropylene - temperatureEffect * 0.25;
+
+    let hydrogen = 5 + (T - 650) * 0.018;
+    let methane = 8 + (T - 700) * 0.012;
+
+    ethylene = Math.max(10, ethylene);
+    propylene = Math.max(5, propylene);
+    hydrogen = Math.max(3, hydrogen);
+    methane = Math.max(5, methane);
+
+    let total = ethylene + propylene + hydrogen + methane;
+
+    let other = Math.max(0, 100 - total);
+
+    if (other < 2) {
+        let correction = 2 - other;
+        ethylene -= correction;
+        other = 2;
+    }
+
+    let values = {
+        ethylene: ethylene,
+        propylene: propylene,
+        hydrogen: hydrogen,
+        methane: methane,
+        other: other
+    };
+
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("ethylene").textContent =
+        ethylene.toFixed(1) + "%";
+
+    document.getElementById("propylene").textContent =
+        propylene.toFixed(1) + "%";
+
+    document.getElementById("hydrogen").textContent =
+        hydrogen.toFixed(1) + "%";
+
+    document.getElementById("methane").textContent =
+        methane.toFixed(1) + "%";
+
+    document.getElementById("other").textContent =
+        other.toFixed(1) + "%";
+
+    document.getElementById("barEthylene").style.width =
+        ethylene + "%";
+
+    document.getElementById("barPropylene").style.width =
+        propylene + "%";
+
+    document.getElementById("barHydrogen").style.width =
+        hydrogen + "%";
+
+    document.getElementById("barMethane").style.width =
+        methane + "%";
+
+    let balanceHTML = "";
+
+    balanceHTML += createRow("Этилен", ethylene, feed);
+    balanceHTML += createRow("Пропилен", propylene, feed);
+    balanceHTML += createRow("Водород", hydrogen, feed);
+    balanceHTML += createRow("Метан", methane, feed);
+    balanceHTML += createRow("Прочие продукты", other, feed);
+
+    document.getElementById("balance").innerHTML = balanceHTML;
+
+    let conclusion = "";
+
+    if (T >= 800) {
+        conclusion =
+        "<b>Вывод:</b> при высокой температуре наблюдается " +
+        "повышенное образование лёгких продуктов пиролиза. " +
+        "В данной модели выход этилена является высоким.";
+    } else {
+        conclusion =
+        "<b>Вывод:</b> при относительно низкой температуре " +
+        "степень превращения сырья ниже. Для увеличения выхода " +
+        "олефинов температуру необходимо повысить.";
+    }
+
+    document.getElementById("conclusion").innerHTML = conclusion;
+
+    window.scrollTo({
+        top: document.getElementById("result").offsetTop - 20,
+        behavior: "smooth"
+    });
+}
+
+function createRow(name, percent, feed) {
+
+    let mass = feed * percent / 100;
+
+    return `
+    <tr>
+        <td>${name}</td>
+        <td>${percent.toFixed(1)}</td>
+        <td>${mass.toFixed(2)}</td>
+    </tr>
+    `;
+}
+
+function resetLab() {
+
+    document.getElementById("temperature").value = 800;
+    document.getElementById("time").value = 0.5;
+    document.getElementById("feed").value = 100;
+    document.getElementById("feedType").value = "ethane";
+
+    document.getElementById("result").style.display = "none";
+
+    document.getElementById("balance").innerHTML =
+        '<tr><td colspan="3">Запустите эксперимент</td></tr>';
+
+    document.querySelectorAll(".fill").forEach(function(bar) {
+        bar.style.width = "0%";
+    });
+}
+
+</script>
+
+</body>
+</html>
